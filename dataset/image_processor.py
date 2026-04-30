@@ -142,6 +142,7 @@ def get_image_data_dav3_workaround(pkl_sample, num_views, scale, is_rgb, strateg
             rectified_camera_params[im_idx], rectified_images[im_idx].shape[0]
         )
         camera_to_worlds[im_idx] = rotate_extrinsics_ccw90(camera_to_worlds[im_idx])
+        camera_to_worlds[im_idx][:3, 3] *= scale
     rectified_images = np.stack(rectified_images)
 
     return (
