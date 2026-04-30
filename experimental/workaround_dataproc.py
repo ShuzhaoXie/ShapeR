@@ -409,6 +409,12 @@ def jpg_encode(image: np.ndarray) -> bytes:
     return buffer.getvalue()
 
 
+def png_encode(image: np.ndarray) -> bytes:
+    image = Image.fromarray(image)
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    return buffer.getvalue()
+
 # =============================================================================
 # Main Pipeline
 # =============================================================================
@@ -576,7 +582,7 @@ def main():
         "image_data": [jpg_encode(image)],
         "camera_to_worlds": [camera_tensor],
         "camera_params": [intrinsics_tensor],
-        "mask_data": [jpg_encode(point_mask)],
+        "mask_data": [png_encode(point_mask)],
 
         # Metadata
         "caption": caption,
