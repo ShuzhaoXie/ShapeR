@@ -55,6 +55,7 @@ def get_image_data_based_on_strategy(
             selected_image_data, k=num_views - len(selected_image_data)
         )
 
+    camera_model = pkl_sample.get("camera_model", "fisheye624")
     (
         rectified_images,
         rectified_masks,
@@ -63,6 +64,7 @@ def get_image_data_based_on_strategy(
         torch.from_numpy(np.array([x[1] for x in selected_image_data])),
         torch.from_numpy(np.array([x[2] for x in selected_image_data])).unsqueeze(-1),
         torch.from_numpy(np.array([x[3] for x in selected_image_data])),
+        camera_model=camera_model,
     )
 
     # rotate if SLAM Aria Gen2 or just RGB

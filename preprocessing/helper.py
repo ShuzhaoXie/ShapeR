@@ -211,12 +211,22 @@ def pad_for_rectification(crops, masks, paddedCropsXYWHC, is_ariagen2):
     return pad_crop, pad_mask
 
 
-def rectify_images(images, masks, camera_params):
-    """Rectify fisheye images to pinhole projection."""
+def rectify_images(images, masks, camera_params, camera_model="fisheye624"):
+    """Rectify fisheye images to pinhole projection. Pinhole images pass through unchanged."""
     rectified_images = []
     rectified_masks = []
     rectified_camera_params = []
     for _, (image, mask, camera_param) in enumerate(zip(images, masks, camera_params)):
+        if camera_model == "pinhole":
+            img_np = image.numpy() if hasattr(image, "numpy") else np.array(image)
+            msk_np = mask.numpy() if hasattr(mask, "numpy") else np.array(mask)
+            if msk_np.ndim == 3:
+                msk_np = msk_np[:, :, 0]
+            p = camera_param.float() if hasattr(camera_param, "float") else torch.tensor(camera_param, dtype=torch.float32)
+            rectified_images.append(img_np)
+            rectified_masks.append(msk_np)
+            rectified_camera_params.append(param_to_matrix(p[:4]).numpy())
+            continue
         if image.ndim == 2:
             video = image[None, ..., None]
         elif image.ndim == 3:
@@ -253,6 +263,12 @@ def rectify_images(images, masks, camera_params):
         rectified_masks.append(vid_mask_rectified[0, :, :, 0])
         rectified_camera_params.append(param_to_matrix(cam_rectified.params[0]))
 
+    if camera_model == "pinhole":
+        return (
+            np.stack(rectified_images, axis=0),
+            np.stack(rectified_masks, axis=0),
+            np.stack(rectified_camera_params, axis=0),
+        )
     return (
         torch.stack(rectified_images, dim=0).numpy(),
         torch.stack(rectified_masks, dim=0).numpy(),

@@ -8,8 +8,9 @@ from huggingface_hub import hf_hub_download
 
 
 def setup_data(pickle_name):
-    # Download "train.csv" from the dataset repository
     Path("data").mkdir(exist_ok=True)
+    if (Path("data") / pickle_name).exists():
+        return  # already present locally, skip download
     try:
         hf_hub_download(
             repo_id="facebook/ShapeR-Evaluation",
