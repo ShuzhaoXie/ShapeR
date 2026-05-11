@@ -1,0 +1,16 @@
+CUDA_VISIBLE_DEVICES=1 python infer_shape.py --input_pkl data/replica/scan1_vggt/dprecon__cabinet_1.pkl --is_local_path --config balance
+CUDA_VISIBLE_DEVICES=1 python infer_shape.py --input_pkl data/replica/scan1_vggt/dprecon__sofa_1.pkl --is_local_path --config balance
+CUDA_VISIBLE_DEVICES=1 python infer_shape.py --input_pkl data/replica/scan1_vggt/dprecon__table_1.pkl --is_local_path --config balance
+CUDA_VISIBLE_DEVICES=1 python infer_shape.py --input_pkl data/replica/scan1_vggt/dprecon__vase_1.pkl --is_local_path --config balance
+CUDA_VISIBLE_DEVICES=1 python infer_shape.py --input_pkl data/replica/scan1_vggt/dprecon__chair_1.pkl --is_local_path --config balance
+CUDA_VISIBLE_DEVICES=1 python infer_shape.py --input_pkl data/replica/scan1_vggt/dprecon__chair_2.pkl --is_local_path --config balance
+CUDA_VISIBLE_DEVICES=1 python infer_shape.py --input_pkl data/replica/scan1_vggt/dprecon__vase_2.pkl --is_local_path --config balance
+CUDA_VISIBLE_DEVICES=1 python infer_shape.py --input_pkl data/replica/scan1_vggt/dprecon__sofa_2.pkl --is_local_path --config balance
+CUDA_VISIBLE_DEVICES=1 python infer_shape.py --input_pkl data/replica/scan1_vggt/dprecon__sofa_3.pkl --is_local_path --config balance
+CUDA_VISIBLE_DEVICES=1 python infer_shape.py --input_pkl data/replica/scan1_vggt/dprecon__sofa_4.pkl --is_local_path --config balance
+
+
+# python preprocessing/dprecon_to_pkl.py \
+#     --input_dir dprecon_data/replica/scan1 \
+#     --depth_dir ~/storage/instascene-sam3d/output/replica/scan1/20260504_073825/vggt_depth_after \
+#     --output_dir data/replica/scan1_vggt
