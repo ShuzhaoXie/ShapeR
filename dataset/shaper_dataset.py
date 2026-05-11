@@ -75,7 +75,7 @@ class InferenceDataset(torch.utils.data.Dataset):
             semi_dense_phi <= thres_phi,
         )
 
-        if filter_semi_dense.shape[0] >= 3:  # at least 3 points
+        if np.count_nonzero(filter_semi_dense) >= 3:  # at least 3 points
             selected_semi_dense_points = semi_dense_points[filter_semi_dense]
         else:
             selected_semi_dense_points = semi_dense_points

@@ -137,6 +137,12 @@ def preprocess_point_cloud(
     pc_sparse_tensors = []
 
     for b in range(len(point_cloud_batch)):
+        if point_cloud_batch[b].numel() == 0 or point_cloud_batch[b].shape[0] == 0:
+            raise ValueError(
+                "Point cloud preprocessing received an empty point cloud. "
+                "Check filtering thresholds or input pkl uncertainty fields."
+            )
+
         point_cloud = PointCloud(point_cloud_batch[b])
 
         if push_to_positive_quadrant:

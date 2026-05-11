@@ -170,8 +170,11 @@ def convert_object(data_dir, out_dir, obj_name, instance_id, caption, frame_rgbs
     pkl = {
         "points_model":             torch.tensor(pts_model, dtype=torch.float32),
         "bounds":                   torch.tensor(bounds, dtype=torch.float32),
+        # DPRecon conversion does not provide ShapeR-style uncertainty
+        # estimates. Use zero uncertainty so inference thresholding keeps the
+        # reconstructed object points.
         "dist_std":                 torch.zeros(N, dtype=torch.float32),
-        "inv_dist_std":             torch.ones(N, dtype=torch.float32),
+        "inv_dist_std":             torch.zeros(N, dtype=torch.float32),
         "T_model_world":            torch.tensor(T_model_world, dtype=torch.float32),
         "camera_model":             "pinhole",
         "image_data":               image_data,
