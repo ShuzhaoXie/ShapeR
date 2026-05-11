@@ -12,4 +12,5 @@ CUDA_VISIBLE_DEVICES=1 python infer_shape.py --input_pkl data/replica/scan1/dpre
 
 python preprocessing/dprecon_to_pkl.py \
     --input_dir dprecon_data/replica/scan1 \
-    --output_dir data/replica/scan1
+    --depth_dir ~/storage/instascene-sam3d/output/replica/scan1/20260504_073825/vggt_depth_after \
+    --output_dir data/replica/scan1_vggt

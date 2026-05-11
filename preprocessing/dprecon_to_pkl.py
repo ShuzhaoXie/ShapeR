@@ -12,6 +12,7 @@ DPRecon directory layout expected:
 
 Usage:
   python preprocessing/dprecon_to_pkl.py --input_dir ~/Downloads/replica-scan1 --output_dir data/
+  python preprocessing/dprecon_to_pkl.py --input_dir ~/Downloads/replica-scan1 --depth_dir ~/Downloads/depths --output_dir data/
 """
 
 import argparse
@@ -198,11 +199,13 @@ def convert_object(data_dir, out_dir, obj_name, instance_id, caption, frame_rgbs
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_dir", required=True, help="Path to DPRecon scan directory")
+    parser.add_argument("--depth_dir", default=None, help="Optional directory containing 000000_depth.npy style depth files")
     parser.add_argument("--output_dir", default="data", help="Output directory for pkl files")
     parser.add_argument("--object", default=None, help="Only convert this object name (default: all)")
     args = parser.parse_args()
 
     data_dir = os.path.expanduser(args.input_dir)
+    depth_dir = os.path.expanduser(args.depth_dir) if args.depth_dir else data_dir
 
     # Load camera poses
     poses = load_poses(os.path.join(data_dir, "traj.txt"))
@@ -223,7 +226,7 @@ def main():
     for i in range(10):
         frame_rgbs.append(np.array(Image.open(
             os.path.join(data_dir, f"{i:06d}_rgb.png")).convert("RGB")))
-        frame_depths.append(np.load(os.path.join(data_dir, f"{i:06d}_depth.npy")))
+        frame_depths.append(np.load(os.path.join(depth_dir, f"{i:06d}_depth.npy")))
         mask_img = np.array(Image.open(
             os.path.join(data_dir, "instance_mask", f"{i:06d}.png")))
         frame_masks.append(mask_img[:, :, 0] if mask_img.ndim == 3 else mask_img)
