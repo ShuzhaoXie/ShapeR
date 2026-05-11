@@ -16,6 +16,7 @@ Usage:
 """
 
 import argparse
+import glob
 import io
 import json
 import os
@@ -56,6 +57,48 @@ def load_poses(traj_path):
         row = np.array(list(map(float, lines[idx].split())), dtype=np.float64)
         poses.append(row.reshape(4, 4))
     return poses  # list of 10 T_c2w matrices
+
+
+def resolve_depth_path(depth_dir, frame_idx):
+    """Resolve common per-frame depth naming conventions."""
+    stem6 = f"{frame_idx:06d}"
+    stem4 = f"{frame_idx:04d}"
+    candidates = [
+        os.path.join(depth_dir, f"{stem6}_depth.npy"),
+        os.path.join(depth_dir, f"{stem6}.npy"),
+        os.path.join(depth_dir, f"depth_{stem6}.npy"),
+        os.path.join(depth_dir, f"{stem4}_depth.npy"),
+        os.path.join(depth_dir, f"{stem4}.npy"),
+        os.path.join(depth_dir, f"{frame_idx}_depth.npy"),
+        os.path.join(depth_dir, f"{frame_idx}.npy"),
+    ]
+    for path in candidates:
+        if os.path.exists(path):
+            return path
+
+    glob_candidates = []
+    for pattern in (
+        os.path.join(depth_dir, f"*{stem6}*depth*.npy"),
+        os.path.join(depth_dir, f"*depth*{stem6}*.npy"),
+        os.path.join(depth_dir, f"*{stem6}*.npy"),
+    ):
+        glob_candidates.extend(glob.glob(pattern))
+
+    glob_candidates = sorted(set(glob_candidates))
+    if len(glob_candidates) == 1:
+        return glob_candidates[0]
+
+    tried = "\n    ".join(candidates)
+    if len(glob_candidates) > 1:
+        matches = "\n    ".join(glob_candidates)
+        raise FileNotFoundError(
+            f"Ambiguous depth file for frame {frame_idx} in {depth_dir}; "
+            f"exact candidates were missing, glob matched:\n    {matches}"
+        )
+    raise FileNotFoundError(
+        f"Could not find depth file for frame {frame_idx} in {depth_dir}. "
+        f"Tried:\n    {tried}"
+    )
 
 
 def backproject(depth_npy, mask_px, T_c2w, scale_s):
@@ -226,7 +269,7 @@ def main():
     for i in range(10):
         frame_rgbs.append(np.array(Image.open(
             os.path.join(data_dir, f"{i:06d}_rgb.png")).convert("RGB")))
-        frame_depths.append(np.load(os.path.join(depth_dir, f"{i:06d}_depth.npy")))
+        frame_depths.append(np.load(resolve_depth_path(depth_dir, i)))
         mask_img = np.array(Image.open(
             os.path.join(data_dir, "instance_mask", f"{i:06d}.png")))
         frame_masks.append(mask_img[:, :, 0] if mask_img.ndim == 3 else mask_img)
