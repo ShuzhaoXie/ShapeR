@@ -80,6 +80,9 @@ ShapeR/
 ├── checkpoints/            # Model weights (downloaded automatically)
 └── data/                   # Input pickle files
 ```
+## Evaluation
+
+See [evaluation section](https://github.com/facebookresearch/ShapeR/blob/main/evaluation/EVAL.md) for scripts.
 
 ## License
 

@@ -13,6 +13,7 @@ import torchsparse
 from dataset.image_processor import (
     crop_pad_preselected_views_with_background,
     get_image_data_based_on_strategy,
+    get_image_data_dav3_workaround
 )
 from dataset.point_cloud import preprocess_point_cloud
 
@@ -85,6 +86,7 @@ class InferenceDataset(torch.utils.data.Dataset):
             "semi_dense_points": selected_semi_dense_points,
             "caption": self.get_caption(pkl_sample),
             "scale": scale,
+            "bounds": bounds,
         }
 
         # check if images are present
@@ -94,12 +96,17 @@ class InferenceDataset(torch.utils.data.Dataset):
             selected_view_ext_list = []
             selected_view_int_list = []
             selected_view_uncropped_pil_bimgs_list = []
+            image_data_extractor = (
+                get_image_data_dav3_workaround
+                if pkl_sample.get('experimental_dav3', False)
+                else get_image_data_based_on_strategy
+            )
             (
                 rectified_images,
                 rectified_point_masks,
                 rectified_camera_params,
                 selected_view_ext,
-            ) = get_image_data_based_on_strategy(
+            ) = image_data_extractor(
                 pkl_sample,
                 self.config.dataset.num_views,
                 scale,
